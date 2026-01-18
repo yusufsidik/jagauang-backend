@@ -1,7 +1,6 @@
 import cache from "../utils/cache.js"
 
 export const cacheMiddleware = (keyBuilder, ttl = 120) => {
-  console.log(keyBuilder)
   return (req, res, next) => {
     const key = typeof keyBuilder === "function"
       ? keyBuilder(req)
@@ -10,9 +9,9 @@ export const cacheMiddleware = (keyBuilder, ttl = 120) => {
     const cachedData = cache.get(key)
     if (cachedData) {
       return res.status(200).json({
-        success: true,
         source: "cache",
         data: cachedData,
+        message: "Success get data"
       })
     }
 
@@ -20,7 +19,7 @@ export const cacheMiddleware = (keyBuilder, ttl = 120) => {
     const originalJson = res.json.bind(res)
 
     res.json = (body) => {
-      if (body?.success) {
+      if (body?.data) {
         cache.set(key, body.data, ttl)
       }
       return originalJson(body)

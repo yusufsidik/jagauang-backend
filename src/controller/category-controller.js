@@ -3,18 +3,17 @@ import { validate } from "../validation/validate.js"
 import { categoryValidation } from "../validation/category-validation.js"
 
 export const getAllCategory = async (req, res) => {
-    const categories = await Category.find()
-
-    return res.status(200).json({
-        data: categories,
-        message: "Success get data categories",
-    })
-    // try {
-    // } catch (error) {
-    //     return res.status(500).json({
-    //         message: "Failed get data categories"
-    //     })
-    // }
+    try {
+        const categories = await Category.find()
+        return res.status(200).json({
+            data: categories,
+            message: "Success get data categories",
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed get data categories"
+        })
+    }
 }
 
 export const getCategoryByType = async (req, res) => {
@@ -56,7 +55,7 @@ export const createCategory = async (req, res) => {
         })
     } catch (error) {
         return res.status(500).json({
-            message: "Failed update category, " + error?.message?.replace("\"","").replace("\"","")
+            message: "Failed create category, " + error?.message?.replace("\"","").replace("\"","")
         })
     }
 }
