@@ -13,7 +13,7 @@ export const apiLimiter = rateLimit({
 
 export const writeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 20,                // max 100 request / IP
+  max: 20,                // max 20 request / IP
   message: {
     success: false,
     message: "Too Many Request Write Operation !!!",

@@ -19,7 +19,7 @@ export const getAllTransaction = async (req, res) => {
       { $unwind: '$category' },
       {
         $project: {
-          _id: 0,
+          _id: 1,
           name: '$category.name',
           type: '$category.type',
           sub_total: 1,
@@ -35,7 +35,7 @@ export const getAllTransaction = async (req, res) => {
     }) 
   } catch (error) {
     return res.status(500).json({
-      message: "Failed get transactions"
+      message: "Failed get transactions" + error?.message?.replace("\"","").replace("\"","")
     })
   }
 }
@@ -53,9 +53,40 @@ export const createTransaction = async (req, res) => {
       message: "Success create transaction"
     })
   } catch (error) {
-    console.log(error)
     return res.status(500).json({
-      message: "Failed create transaction"
+      message: "Failed create transaction " + error?.message?.replace("\"","").replace("\"","")
+    })
+  }
+}
+
+export const findAndUpdate = async (req, res) => {
+  try {
+    const { id } = req.params
+    const validated = validate(transactionValidation, req.body)
+    await Transaction.findByIdAndUpdate(id, validated)
+
+    return res.status(201).json({
+      data: validated,
+      message: "Success update transaction"
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed update transaction " + error?.message?.replace("\"","").replace("\"","")
+    })
+  }
+}
+
+export const deleteTransaction = async (req, res) => {
+  try {
+    const { id } = req.params
+    await Transaction.findByIdAndDelete(id)
+    
+    return res.status(200).json({
+      message: "Success delete transaction"
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed delete transaction " + error?.message?.replace("\"","").replace("\"","")
     })
   }
 }

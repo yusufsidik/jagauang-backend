@@ -88,7 +88,7 @@ export const findAndDelete = async (req, res) => {
         })
     } catch (error) {
         return re.status(500).json({
-            message: "Failed delete category"
+            message: "Failed delete category" + error?.message?.replace("\"","").replace("\"","")
         })
     }
 }
