@@ -1,6 +1,7 @@
 import Transaction  from "../models/Transaction.js"
 import { validate } from "../validation/validate.js"
 import { transactionValidation } from '../validation/transaction-validation.js'
+import getDateRange from "../services/getDateRange.js"
 
 export const getAllTransaction = async (req, res) => {
   try {
@@ -38,6 +39,92 @@ export const getAllTransaction = async (req, res) => {
       message: "Failed get transactions" + error?.message?.replace("\"","").replace("\"","")
     })
   }
+}
+
+export const getTransactionsByDate = async (req, res) => {
+  try {
+
+    const { startDate, endDate } = req.query
+    const { start, end } = getDateRange(startDate, endDate)
+    console.log(start, end)
+    const transactionsByDate = await Transaction.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: start,
+            $lte: end
+          }
+        }
+      },
+
+      // Join category
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          pipeline: [
+            { $project: { name: 1, type: 1, _id: 0 } }
+          ],
+          as: 'category'
+        }
+      },
+
+      // category array → object
+      { $unwind: '$category' },
+
+      // Format date (group per hari)
+      {
+        $addFields: {
+          formattedDate: {
+            $dateToString: {
+              format: '%d-%m-%Y',
+              date: '$date'
+            }
+          }
+        }
+      },
+
+      // Group by tanggal
+      {
+        $group: {
+          _id: '$formattedDate',
+          transactions: {
+            $push: {
+              name: '$category.name',
+              type: '$category.type',
+              sub_total: '$sub_total',
+              information: '$information'
+            }
+          }
+        }
+      },
+
+      // Rapikan output
+      {
+        $project: {
+          _id: 0,
+          date: '$_id',
+          transactions: 1
+        }
+      },
+
+      // Urutkan tanggal (terbaru dulu)
+      { $sort: { date: 1 } }
+    ])  
+
+    return res.status(200).json({
+      data: transactionsByDate,
+      message: "Success get data transaction by date"
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed get data transaction by date" + error
+    })
+  }
+  
+
+
 }
 
 export const createTransaction = async (req, res) => {
