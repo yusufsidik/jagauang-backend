@@ -1,10 +1,14 @@
-import Category from "../models/Category.js"
-import { validate } from "../validation/validate.js"
-import { categoryValidation } from "../validation/category-validation.js"
+import { 
+    allCategoryService,
+    getCategoryByTypeService,
+    createCategoyService,
+    findAndUpdateService,
+    findAndDeleteService
+} from "../services/category/category-service.js"
 
 export const getAllCategory = async (req, res) => {
     try {
-        const categories = await Category.find()
+        const categories = await allCategoryService()
         return res.status(200).json({
             data: categories,
             message: "Success get data categories",
@@ -18,37 +22,22 @@ export const getAllCategory = async (req, res) => {
 
 export const getCategoryByType = async (req, res) => {
     try {
-        
         const { type } = req.params
-
-        if(!["pemasukan","pengeluaran"].includes(type)){
-            res.status(500).json({
-                message: "Wrong type btw"
-            })
-        }
-
-        const categoryByType = await Category.find({type: type}).exec()
+        const categoryByType = await getCategoryByTypeService(type, res)
         return res.status(200).json({
             data: categoryByType,
-            message: "Success get category " + type
+            message: `Success get category ${type}`
         })
     } catch (error) {
         return res.status(500).json({
-            message: "Failed get data category " + type
+            message: `Failed get data category ${type}, ${error?.message?.replace("\"","").replace("\"","")}`
         })
     }
 }
 
-// receive name, type:enum["pemasukan","pengeluaran"]
 export const createCategory = async (req, res) => {
     try {
-
-        const validated = validate(categoryValidation, req.body)
-
-        const newCategory = new Category(validated)    
-
-        await newCategory.save()
-
+        const newCategory = await createCategoyService(req)
         return res.status(201).json({
             data: newCategory ,
             message: "Success create category"
@@ -61,13 +50,8 @@ export const createCategory = async (req, res) => {
 }
 
 export const findAndUpdate = async (req, res) => {
-    
     try {
-        const { id } = req.params
-        const validated = validate(categoryValidation, req.body)
-
-        const category = await Category.findByIdAndUpdate(id, validated)
-
+        const category = await findAndUpdateService(req)
         return res.status(200).json({
             data: category,
             message: "Success update category"
@@ -81,8 +65,7 @@ export const findAndUpdate = async (req, res) => {
 
 export const findAndDelete = async (req, res) => {
     try {
-        const { id } = req.params
-        await Category.findByIdAndDelete(id)
+        await findAndDeleteService(req)
         return res.status(200).json({
             message: "Success delete category"
         })
