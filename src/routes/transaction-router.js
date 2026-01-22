@@ -2,6 +2,7 @@ import express from 'express'
 import { cacheMiddleware } from '../middlewares/cache.middleware.js'
 import { clearCache } from '../middlewares/clear-cache.middleware.js'
 import { apiLimiter, writeLimiter } from '../middlewares/rate-limit.middleware.js'
+import { clearCacheKeyTransactionDate } from '../utils/clearCacheKeyByDate.js'
 
 import { 
     getAllTransaction, 
@@ -13,7 +14,6 @@ import {
 
 const router = express.Router()
 const TRANSACTION_CACHE_KEY = 'transaction:all'
-const TRANSACTION_BY_DATE_CACHE_KEY = 'transaction:date'
 
 // get all transaction
 router.get('/', 
@@ -25,7 +25,6 @@ router.get('/',
 // get data transaction by date
 router.get('/date', 
     apiLimiter,
-    // cacheMiddleware(TRANSACTION_BY_DATE_CACHE_KEY),
     getTransactionsByDate
 )
 
@@ -33,9 +32,12 @@ router.get('/date',
 router.post('/', 
     writeLimiter,
     clearCache([
-        TRANSACTION_CACHE_KEY, 
-        TRANSACTION_BY_DATE_CACHE_KEY
+        TRANSACTION_CACHE_KEY
     ]),
+    (req, res, next) => {
+        clearCacheKeyTransactionDate()
+        next()
+    },
     createTransaction
 )
 
@@ -43,9 +45,12 @@ router.post('/',
 router.put('/:id', 
     writeLimiter,
     clearCache([
-        TRANSACTION_CACHE_KEY, 
-        TRANSACTION_BY_DATE_CACHE_KEY
+        TRANSACTION_CACHE_KEY
     ]),
+    (req, res, next) => {
+        clearCacheKeyTransactionDate()
+        next()
+    },
     findAndUpdate
 )
 
@@ -53,9 +58,12 @@ router.put('/:id',
 router.delete('/:id', 
     writeLimiter,
     clearCache([
-        TRANSACTION_CACHE_KEY, 
-        TRANSACTION_BY_DATE_CACHE_KEY
+        TRANSACTION_CACHE_KEY
     ]),
+    (req, res, next) => {
+        clearCacheKeyTransactionDate()
+        next()
+    },
     deleteTransaction
 )
 

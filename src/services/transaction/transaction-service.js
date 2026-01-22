@@ -2,6 +2,8 @@ import Transaction  from "../../models/Transaction.js"
 import getDateRange from "./getDateRange.js"
 import { validate } from "../../validation/validate.js"
 import { transactionValidation } from "../../validation/transaction-validation.js"
+import cache from "../../utils/cache.js"
+import { clearCacheKeyTransactionDate } from "../../utils/clearCacheKeyByDate.js"
 
 export const allTransactionsService = async () => {
   return await Transaction.aggregate([
@@ -33,8 +35,14 @@ export const allTransactionsService = async () => {
 export const transactionByDateService = async (query) => {
   const { startDate, endDate } = query
   const { start, end } = getDateRange(startDate, endDate)
+  const cacheKey = `transaction-date:${start.toISOString()}:${end.toISOString()}`
+  const cachedData = cache.get(cacheKey)
 
-  return await Transaction.aggregate([
+  if(cachedData){
+    return cachedData
+  }
+
+  const data =  await Transaction.aggregate([
     {
       $match: {
         date: {
@@ -99,12 +107,17 @@ export const transactionByDateService = async (query) => {
     // Urutkan tanggal (terbaru dulu)
     { $sort: { date: 1 } }
   ])  
+
+  cache.set(cacheKey, data)
+
+  return data
 }
 
 export const createTransactionService = async (body) => {
   const validated = validate(transactionValidation, body)
   const newTransaction = new Transaction(validated)
   await newTransaction.save()
+  clearCacheKeyTransactionDate()
   return newTransaction
 }
 
@@ -112,11 +125,13 @@ export const findAndUpdateService = async (req) => {
   const { id } = req.params
   const validated = validate(transactionValidation, req.body)
   await Transaction.findByIdAndUpdate(id, validated)
+  clearCacheKeyTransactionDate()
   return validated
 }
 
 export const deleteTransactionService = async (req) => {
   const { id } = req.params
   await Transaction.findByIdAndDelete(id)
+  clearCacheKeyTransactionDate()
 }
 

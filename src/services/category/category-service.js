@@ -13,9 +13,7 @@ export const getCategoryByTypeService = async (type, res) => {
         })
     }
     const category = await Category.find({type: type}).exec()
-    console.log(category)
     return category
-
 }
 
 export const createCategoyService = async (req) => {

@@ -9,7 +9,6 @@ export const cacheMiddleware = (keyBuilder, ttl = 120) => {
     const cachedData = cache.get(key)
     if (cachedData) {
       return res.status(200).json({
-        source: "cache",
         data: cachedData,
         message: "Success get data"
       })
