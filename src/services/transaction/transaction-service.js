@@ -3,7 +3,6 @@ import getDateRange from "./getDateRange.js"
 import { validate } from "../../validation/validate.js"
 import { transactionValidation } from "../../validation/transaction-validation.js"
 import cache from "../../utils/cache.js"
-import { clearCacheKeyTransactionDate } from "../../utils/clearCacheKeyByDate.js"
 
 export const allTransactionsService = async () => {
   return await Transaction.aggregate([
@@ -117,7 +116,6 @@ export const createTransactionService = async (body) => {
   const validated = validate(transactionValidation, body)
   const newTransaction = new Transaction(validated)
   await newTransaction.save()
-  clearCacheKeyTransactionDate()
   return newTransaction
 }
 
@@ -125,13 +123,11 @@ export const findAndUpdateService = async (req) => {
   const { id } = req.params
   const validated = validate(transactionValidation, req.body)
   await Transaction.findByIdAndUpdate(id, validated)
-  clearCacheKeyTransactionDate()
   return validated
 }
 
 export const deleteTransactionService = async (req) => {
   const { id } = req.params
   await Transaction.findByIdAndDelete(id)
-  clearCacheKeyTransactionDate()
 }
 

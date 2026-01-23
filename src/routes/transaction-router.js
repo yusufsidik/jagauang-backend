@@ -2,7 +2,7 @@ import express from 'express'
 import { cacheMiddleware } from '../middlewares/cache.middleware.js'
 import { clearCache } from '../middlewares/clear-cache.middleware.js'
 import { apiLimiter, writeLimiter } from '../middlewares/rate-limit.middleware.js'
-import { clearCacheKeyTransactionDate } from '../utils/clearCacheKeyByDate.js'
+import { clearCacheTransactionByDate } from '../utils/clearCacheTransactionByDate.js'
 
 import { 
     getAllTransaction, 
@@ -34,10 +34,7 @@ router.post('/',
     clearCache([
         TRANSACTION_CACHE_KEY
     ]),
-    (req, res, next) => {
-        clearCacheKeyTransactionDate()
-        next()
-    },
+    clearCacheTransactionByDate(),
     createTransaction
 )
 
@@ -47,10 +44,7 @@ router.put('/:id',
     clearCache([
         TRANSACTION_CACHE_KEY
     ]),
-    (req, res, next) => {
-        clearCacheKeyTransactionDate()
-        next()
-    },
+    clearCacheTransactionByDate(),
     findAndUpdate
 )
 
@@ -60,10 +54,7 @@ router.delete('/:id',
     clearCache([
         TRANSACTION_CACHE_KEY
     ]),
-    (req, res, next) => {
-        clearCacheKeyTransactionDate()
-        next()
-    },
+    clearCacheTransactionByDate(),
     deleteTransaction
 )
 
