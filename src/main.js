@@ -4,12 +4,14 @@ import { connectDB } from './config/database.js'
 import categoryRouter from './routes/category-routes.js'
 import transactionRouter from './routes/transaction-router.js'
 import { apiLimiter } from './middlewares/rate-limit.middleware.js'
+import { httpLogger } from './middlewares/logger.middleware.js' 
 
 const PORT = process.env.PORT
 const app = express()
 
 app.use(express.json())
 app.use(apiLimiter)
+app.use(httpLogger)
 
 // routes
 app.use("/api/category", categoryRouter)

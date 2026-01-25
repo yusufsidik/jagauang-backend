@@ -6,6 +6,8 @@ import {
     findAndDeleteService
 } from "../services/category/category-service.js"
 
+import logger from "../utils/logger.js"
+
 export const getAllCategory = async (req, res) => {
     try {
         const categories = await allCategoryService()
@@ -14,6 +16,7 @@ export const getAllCategory = async (req, res) => {
             message: "Success get data categories",
         })
     } catch (error) {
+        logger.error(error, "getAllCategory failed")
         return res.status(500).json({
             message: "Failed get data categories"
         })
@@ -29,6 +32,7 @@ export const getCategoryByType = async (req, res) => {
             message: `Success get category ${type}`
         })
     } catch (error) {
+        logger.error(error, "getCategoryByType failed")
         return res.status(500).json({
             message: `Failed get data category ${type}, ${error?.message?.replace("\"","").replace("\"","")}`
         })
@@ -43,6 +47,7 @@ export const createCategory = async (req, res) => {
             message: "Success create category"
         })
     } catch (error) {
+        logger.error(error, "createCategory failed")
         return res.status(500).json({
             message: "Failed create category, " + error?.message?.replace("\"","").replace("\"","")
         })
@@ -57,6 +62,7 @@ export const findAndUpdate = async (req, res) => {
             message: "Success update category"
         })
     } catch (error) {
+        logger.error(error, "findAndUpdate failed")
         return res.status(500).json({
             message: "Failed update category, " + error?.message?.replace("\"","").replace("\"","")
         })
@@ -70,6 +76,7 @@ export const findAndDelete = async (req, res) => {
             message: "Success delete category"
         })
     } catch (error) {
+        logger.error(error, "findAndDelete failed")
         return re.status(500).json({
             message: "Failed delete category" + error?.message?.replace("\"","").replace("\"","")
         })
