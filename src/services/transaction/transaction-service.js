@@ -2,10 +2,14 @@ import Transaction  from "../../models/Transaction.js"
 import getDateRange from "./getDateRange.js"
 import { validate } from "../../validation/validate.js"
 import { transactionValidation } from "../../validation/transaction-validation.js"
-import cache from "../../utils/cache.js"
 
-export const allTransactionsService = async () => {
-  return await Transaction.aggregate([
+export const allTransactionsService = async (req) => {
+  const page = Number(req.query?.page) || 1
+  const limit = Number(req.query?.limit) || 10
+  const start = (page - 1) * limit
+  const end = page * limit
+
+  const transactions = await Transaction.aggregate([
       {
         $lookup: {
             from: 'categories',
@@ -29,19 +33,32 @@ export const allTransactionsService = async () => {
         }
       }
   ])
+
+  const paginated = transactions.slice(start, end)
+
+  return {
+    success: true,
+    meta: {
+      page,
+      limit,
+      total: transactions.length,
+      totalpages: Math.ceil(transactions.length / limit)
+    },
+    data: paginated
+  }
 } 
 
-export const transactionByDateService = async (query) => {
-  const { startDate, endDate } = query
+export const transactionByDateService = async (req) => {
+  
+  const page = Number(req.query.page) || 1
+  const limit = Number(req.query.limit) || 10
+  const startPagination = (page - 1) * limit
+  const endPagination = page * limit
+
+  const { startDate, endDate } = req.query
   const { start, end } = getDateRange(startDate, endDate)
-  const cacheKey = `transaction-date:${start.toISOString()}:${end.toISOString()}`
-  const cachedData = cache.get(cacheKey)
 
-  if(cachedData){
-    return cachedData
-  }
-
-  const data =  await Transaction.aggregate([
+  const transactionsByDate =  await Transaction.aggregate([
     {
       $match: {
         date: {
@@ -107,9 +124,18 @@ export const transactionByDateService = async (query) => {
     { $sort: { date: 1 } }
   ])  
 
-  cache.set(cacheKey, data)
+  const paginated = transactionsByDate.slice(startPagination, endPagination)
 
-  return data
+  return {
+    success: true,
+    meta: {
+      page,
+      limit,
+      total: transactionsByDate.length,
+      totalpages: Math.ceil(transactionsByDate.length / limit)
+    },
+    data: paginated
+  }
 }
 
 export const createTransactionService = async (body) => {

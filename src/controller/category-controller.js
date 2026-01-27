@@ -5,14 +5,15 @@ import {
     findAndUpdateService,
     findAndDeleteService
 } from "../services/category/category-service.js"
-
 import logger from "../utils/logger.js"
 
 export const getAllCategory = async (req, res) => {
     try {
-        const categories = await allCategoryService()
+        const {success, meta, data} = await allCategoryService(req)
         return res.status(200).json({
-            data: categories,
+            success,
+            meta,
+            data,
             message: "Success get data categories",
         })
     } catch (error) {

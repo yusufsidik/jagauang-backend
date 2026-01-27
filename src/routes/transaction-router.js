@@ -2,7 +2,6 @@ import express from 'express'
 import { cacheMiddleware } from '../middlewares/cache.middleware.js'
 import { clearCache } from '../middlewares/clear-cache.middleware.js'
 import { apiLimiter, writeLimiter } from '../middlewares/rate-limit.middleware.js'
-import { clearCacheTransactionByDate } from '../utils/clearCacheTransactionByDate.js'
 
 import { 
     getAllTransaction, 
@@ -11,50 +10,50 @@ import {
     deleteTransaction,
     getTransactionsByDate
 } from '../controller/transaction-controller.js'
+import getDateRange from '../services/transaction/getDateRange.js'
 
 const router = express.Router()
-const TRANSACTION_CACHE_KEY = 'transaction:all'
 
 // get all transaction
 router.get('/', 
     apiLimiter,
-    cacheMiddleware(TRANSACTION_CACHE_KEY),
+    cacheMiddleware(req => {
+        return `transaction:page=${req.query.page || 1}:limit=${req.query.limit || 10}`
+    }),
     getAllTransaction
 )
 
 // get data transaction by date
 router.get('/date', 
     apiLimiter,
+    cacheMiddleware(req => {
+        const {start, end} = getDateRange(req.query.startDate, req.query.endDate)
+        return `transaction-date:start=${start.toISOString()}:end=${end.toISOString()}:page=${req.query.page || 1}:limit=${req.query.limit || 10}`
+    }),
     getTransactionsByDate
 )
 
 // create transaction
 router.post('/', 
     writeLimiter,
-    clearCache([
-        TRANSACTION_CACHE_KEY
-    ]),
-    clearCacheTransactionByDate(),
+    clearCache("transaction:"),
+    clearCache("transaction-date:"),
     createTransaction
 )
 
 // update transaction
 router.put('/:id', 
     writeLimiter,
-    clearCache([
-        TRANSACTION_CACHE_KEY
-    ]),
-    clearCacheTransactionByDate(),
+    clearCache("transaction:"),
+    clearCache("transaction-date:"),
     findAndUpdate
 )
 
 // delete transaction
 router.delete('/:id', 
     writeLimiter,
-    clearCache([
-        TRANSACTION_CACHE_KEY
-    ]),
-    clearCacheTransactionByDate(),
+    clearCache("transaction:"),
+    clearCache("transaction-date:"),
     deleteTransaction
 )
 

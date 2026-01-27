@@ -4,28 +4,31 @@
 
 Endpoint : GET /api/transaction
 
+Query Params : 
+- page : Number, default = 1
+- limit : Number, default = 10
+
 Response Success :
 
 ```json
 {
+  "success" : true,
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total": 14,
+    "totalpages": 2
+  },
   "data": [
     {
-      "_id": "696ce360e631c5987057bbd2",
+      "_id": "123456789123456789546123",
       "date": "1970-01-01T03:20:12.026Z",
       "sub_total": 15000,
       "name": "Makan Siang",
       "type": "pengeluaran"
     },
-    {
-      "_id": "696ce86eda8e640c1b5ad5a1",
-      "date": "2026-01-27T03:20:12.026Z",
-      "sub_total": 3500000,
-      "information": "Gaji",
-      "name": "Jualan",
-      "type": "pemasukan"
-    }
   ],
-  "message": "Success get data transaction"
+  "message": "Success get transactions"
 }
 ```
 
@@ -42,34 +45,52 @@ Response Error :
 Endpoint : GET /api/transaction/date
 
 Query params :
-startDate : Date
-endDate : Date
-
-Default :
-startDate : first date from this month and this year
-endDate : last date from this month and this year
+- startDate : Date, default = first date on this month, format = Y-m-d
+- endDate : Date, default = end date on this month, format = Y-m-d
+- page : Number, default = 1
+- limit : Number, default = 10
 
 Response Success :
 
 ```json
 {
+    "success" : true,
     "data" : [
-      "transactions": [
-        {
-          "name": "Makan Siang",
-          "type": "pengeluaran",
-          "sub_total": 15000,
-          "information": "Pecel"
-        },
-        {
-          "name": "Makan Siang",
-          "type": "pengeluaran",
-          "sub_total": 5000,
-          "information": "Pentol"
-        }
-      ],
-      "date": "19-01-2026"
+      {
+        "transactions": [
+          {
+            "name": "Makan Siang",
+            "type": "pengeluaran",
+            "sub_total": 15000,
+            "information": "Pecel yutun"
+          },
+          {
+            "name": "Makan Siang",
+            "type": "pengeluaran",
+            "sub_total": 15000,
+            "information": "Pecel Mbah mir"
+          },
+        ],
+        "date": "19-01-2026"
+      },
+      {
+        "transactions": [
+          {
+            "name": "Belanja Online",
+            "type": "pengeluaran",
+            "sub_total": 2000000,
+            "information": "Kursi geming"
+          }
+        ],
+        "date": "20-01-2026"
+      }
     ],
+    "meta": {
+      "page": 1,
+      "limit": 10,
+      "total": 4,
+      "totalpages": 1
+    },
     "message" : "Success get data transaction by date"
 }
 ```
@@ -91,7 +112,7 @@ Request Body :
 ```json
 {
   "date": "1970-01-01T03:20:12.026Z",
-  "category": "69674c361f7ddf17ddc33cfa",
+  "category": "123456789123456789546123",
   "sub_total": 15000,
   "information": ""
 }
@@ -102,9 +123,9 @@ Response Success :
 ```json
 {
   "data": {
-    "_id": "6973764272afa1ed4721a0ab",
+    "_id": "123456789123456789546123",
     "date": "2026-01-23T03:20:12.026Z",
-    "category": "69674c361f7ddf17ddc33cfa",
+    "category": "123456789123456789546123",
     "sub_total": 15000,
     "information": "test"
   },
@@ -122,14 +143,14 @@ Response Error :
 
 ## Update Transaction
 
-Endpoint : PUT /api/transaction
+Endpoint : PUT /api/transaction/:id
 
 Request Body :
 
 ```json
 {
   "date": "1970-01-01T03:20:12.026Z",
-  "category": "69674c361f7ddf17ddc33cfa",
+  "category": "123456789123456789546123",
   "sub_total": 15000,
   "information": ""
 }
@@ -140,9 +161,9 @@ Response Success :
 ```json
 {
   "data": {
-    "_id": "6973764272afa1ed4721a0ab",
+    "_id": "123456789123456789546123",
     "date": "2026-01-23T03:20:12.026Z",
-    "category": "69674c361f7ddf17ddc33cfa",
+    "category": "123456789123456789546123",
     "sub_total": 15000,
     "information": "test"
   },
@@ -160,7 +181,7 @@ Response Error :
 
 ## Delete Transaction
 
-Endpoint : DELETE /api/transaction
+Endpoint : DELETE /api/transaction:id
 
 Response Success :
 

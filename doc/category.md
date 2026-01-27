@@ -4,22 +4,29 @@
 ## Get All Category
 Endpoint : GET /api/category
 
+Query Params : 
+- page: Number, default = 1
+- limit: Number, default = 10
+
 Response Success : 
 ```json 
 {
+    "success": true,
+    "message": "Success get data",
     "data" : [
         {
-            "_id" : "1",
-            "name" : "Gaji",
-            "type" : "pemasukan"
-        },
-        {
-            "_id" : "2",
-            "name" : "Makan Siang",
-            "type" : "pengeluaran"
+            "_id": "123456789123456789546123",
+            "name": "Makan Siang",
+            "type": "pengeluaran",
+            "__v": 0
         }
     ],
-    "message" : "Success get category"
+    "meta": {
+        "page": 1,
+        "limit": 10,
+        "total": 33,
+        "totalpages": 4
+    }
 }
 ```
 Response Error : 
@@ -36,7 +43,7 @@ Endpoint : POST /api/category
 Request Body : 
 ```json 
 {
-    "name" : "String",
+    "name" : "Gaji",
     "type" : "pemasukan"
 }
 ```
@@ -45,7 +52,7 @@ Response Success :
 ```json 
 {
     "data" : {
-        "_id" : "1",
+        "_id" : "123456789123456789546123",
         "name" : "Gaji",
         "type" : "pemasukan"
     },
@@ -71,12 +78,12 @@ Response Success :
 {
     "data" : [
         {
-            "_id" : "1",
+            "_id" : "123456789123456789546123",
             "name" : "Gaji",
             "type" : "pemasukan"
         },
         {
-            "_id" : "2",
+            "_id" : "123456789123456789546123",
             "name" : "Deposito",
             "type" : "pemasukan"
         }
@@ -98,7 +105,7 @@ Endpoint : PUT /api/category/:id
 Request Body : 
 ```json 
 {
-    "name" : "String",
+    "name" : "Gaji",
     "type" : "pemasukan"
 }
 ```
@@ -107,7 +114,7 @@ Response Success :
 ```json 
 {
     "data" : {
-        "_id" : "1",
+        "_id" : "123456789123456789546123",
         "name" : "Gaji",
         "type" : "pemasukan"
     },

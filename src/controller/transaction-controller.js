@@ -7,12 +7,13 @@ import {
 } from "../services/transaction/transaction-service.js"
 import logger from "../utils/logger.js"
 
-
 export const getAllTransaction = async (req, res) => {
   try {
-    const result = await allTransactionsService()
+    const {success, meta, data} = await allTransactionsService(req)
     return res.status(200).json({
-      data: result,
+      success,
+      meta,
+      data,
       message: "Success get transactions"
     }) 
   } catch (error) {
@@ -25,9 +26,11 @@ export const getAllTransaction = async (req, res) => {
 
 export const getTransactionsByDate = async (req, res) => {
   try {
-    const result = await transactionByDateService(req.query)
+    const {success, meta, data} = await transactionByDateService(req)
     return res.status(200).json({
-      data: result,
+      success,
+      meta,
+      data,
       message: "Success get data transaction by date"
     })
   } catch (error) {
@@ -41,7 +44,6 @@ export const getTransactionsByDate = async (req, res) => {
 export const createTransaction = async (req, res) => {
   try {
     const newTransaction = await createTransactionService(req.body)
-    
     return res.status(201).json({
       data: newTransaction,
       message: "Success create transaction"

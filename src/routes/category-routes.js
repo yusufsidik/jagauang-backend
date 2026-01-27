@@ -11,17 +11,18 @@ import { clearCache } from '../middlewares/clear-cache.middleware.js'
 import { apiLimiter, writeLimiter } from '../middlewares/rate-limit.middleware.js'
 
 const router = express.Router()
-const CATEGORY_CACHE_KEY="category:all"
 
 router.get("/", 
     apiLimiter,
-    cacheMiddleware(CATEGORY_CACHE_KEY), 
+    cacheMiddleware(req => {
+        return `category:page=${req.query.page || 1}:limit=${req.query.limit || 10}`
+    }),
     getAllCategory
 )
 
 router.post("/", 
     writeLimiter,
-    clearCache([CATEGORY_CACHE_KEY]), 
+    clearCache("category:"), 
     createCategory
 )
 
@@ -31,13 +32,13 @@ router.get("/:type",
 
 router.delete("/:id", 
     writeLimiter,
-    clearCache([CATEGORY_CACHE_KEY]),
+    clearCache("category:"),
     findAndDelete
 )
 
 router.put("/:id", 
     writeLimiter,
-    clearCache([CATEGORY_CACHE_KEY]),
+    clearCache("category:"),
     findAndUpdate
 )
 
