@@ -10,8 +10,8 @@ const PORT = process.env.PORT
 const app = express()
 
 // middlewares
-app.use(express.json()) // json
 app.use(httpLogger) // logging
+app.use(express.json()) // json
 app.use(apiLimiter) // rate limiter
 
 // routes

@@ -7,7 +7,7 @@
   "type": "module",
   "main": "src/main.js",
   "scripts": {
-    "mulai": "nodemon src/main.js"
+    "mulai": "nodemon src/main.js | pino-pretty"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
