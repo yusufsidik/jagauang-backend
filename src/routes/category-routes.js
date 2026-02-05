@@ -23,22 +23,29 @@ router.get("/",
 router.post("/", 
     writeLimiter,
     clearCache("category:"), 
+    clearCache("category-type:"),
     createCategory
 )
 
 router.get("/:type", 
     apiLimiter,
-    getCategoryByType) // type ["pemasukan","pengeluaran"]
+    cacheMiddleware(req => {
+        return `category-type:${req.params.type}`
+    }),
+    getCategoryByType
+) // type ["pemasukan","pengeluaran"]
 
 router.delete("/:id", 
     writeLimiter,
     clearCache("category:"),
+    clearCache("category-type:"),
     findAndDelete
 )
 
 router.put("/:id", 
     writeLimiter,
     clearCache("category:"),
+    clearCache("category-type:"),
     findAndUpdate
 )
 

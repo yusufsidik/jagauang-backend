@@ -8,7 +8,8 @@ import {
     createTransaction,
     findAndUpdate,
     deleteTransaction,
-    getTransactionsByDate
+    getTransactionsByDate,
+    getTransactionByMonth
 } from '../controller/transaction-controller.js'
 import getDateRange from '../services/transaction/getDateRange.js'
 
@@ -33,11 +34,22 @@ router.get('/date',
     getTransactionsByDate
 )
 
+// get data transaction by month
+router.get('/month', 
+    cacheMiddleware(req => {
+        const month = new Date().getDate()
+        const year = new Date().getFullYear()
+        return `transaction-month:month=${Number(req.query.month || month)}:year=${Number(req.query?.year) || year}`
+    }),
+    getTransactionByMonth
+)
+
 // create transaction
 router.post('/', 
     writeLimiter,
     clearCache("transaction:"),
     clearCache("transaction-date:"),
+    clearCache("transaction-month:"),
     createTransaction
 )
 
@@ -46,6 +58,7 @@ router.put('/:id',
     writeLimiter,
     clearCache("transaction:"),
     clearCache("transaction-date:"),
+    clearCache("transaction-month:"),
     findAndUpdate
 )
 
@@ -54,6 +67,7 @@ router.delete('/:id',
     writeLimiter,
     clearCache("transaction:"),
     clearCache("transaction-date:"),
+    clearCache("transaction-month:"),
     deleteTransaction
 )
 

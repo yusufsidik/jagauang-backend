@@ -3,7 +3,8 @@ import {
   transactionByDateService,
   createTransactionService,
   findAndUpdateService,
-  deleteTransactionService
+  deleteTransactionService,
+  transactionByMonthService
 } from "../services/transaction/transaction-service.js"
 import logger from "../utils/logger.js"
 
@@ -26,17 +27,33 @@ export const getAllTransaction = async (req, res) => {
 
 export const getTransactionsByDate = async (req, res) => {
   try {
-    const {success, meta, data} = await transactionByDateService(req)
+    const {success, meta, data, message} = await transactionByDateService(req)
     return res.status(200).json({
       success,
       meta,
       data,
-      message: "Success get data transaction by date"
+      message
     })
   } catch (error) {
     logger.error(error, "getTransactionsByDate failed")
     return res.status(500).json({
-      message: "Failed get data transaction by date" + error
+      message: "Failed get data transactions by date " + error
+    })
+  }
+}
+
+export const getTransactionByMonth = async (req, res) => {
+  try {
+    const { data, success, message } = await transactionByMonthService(req, res)
+    return res.status(200).json({
+      data,
+      success,
+      message
+    })
+  } catch (error) {
+    logger.error(error, "getTransactionsByMonth failed")
+    return res.status(500).json({
+      message: "Failed get data transactions by month " + error
     })
   }
 }
