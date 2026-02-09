@@ -1,6 +1,6 @@
 export const getMonthRange = (month, year) => {
     const y = year ? Number(year) : new Date().getFullYear()
-    const m = Number(month) - 1
+    const m = month ? Number(month) - 1 : new Date().getMonth()
     
     const start = new Date(y, m, 1)
     start.setHours(0,0,0,0)

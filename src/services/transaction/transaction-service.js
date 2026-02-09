@@ -151,19 +151,13 @@ export const transactionByMonthService = async (req, res) => {
 
   const { month, year } = req.query
 
-  // validasi input bulan
-  if(!month) {
-    return res.status(400).json({
-      message: 'month is required (1-12)'
-    })
-  }
-  if(Number(month) > 12){
+  if(Number(month) > 12 || Number(month) <= 0){
     return res.status(400).json({
       message: 'Wrong input month'
     })
   }
 
-  const { start, end } = getMonthRange(month, year)
+  const { start, end } = getMonthRange(Number(month), Number(year))
 
   const data = await Transaction.aggregate([
     {
